@@ -1,72 +1,75 @@
 <?php
 
-namespace App\Http\Controllers\Payment;
+namespace App\Http\Controllers;
 
-use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\Http;
+use App\Models\Order;
+use App\Models\Payment;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
 
-class MpesaController extends Controller
+class MpesaGatewayController extends Controller
 {
-    private function getAccessToken()
-    {
-        $url = env('MPESA_ENVIRONMENT') === 'live' 
-            ? 'https://api.safaricom.co.ke/oauth/v1/generate?grant_type=client_credentials'
-            : 'https://sandbox.safaricom.co.ke/oauth/v1/generate?grant_type=client_credentials';
-
-        $response = Http::withBasicAuth(env('MPESA_CONSUMER_KEY'), env('MPESA_CONSUMER_SECRET'))->get($url);
-
-        return $response->json()['access_token'];
-    }
-
     public function initiateStkPush(Request $request)
     {
         $request->validate([
-            'phone' => 'required|regex:/^2547[0-9]{8}$|^2541[0-9]{8}$/',
-            'amount' => 'required|numeric|min:1',
+            'amount' => 'required|numeric',
+            'phone' => 'required'
         ]);
 
-        $endpoint = 'https://sandbox.safaricom.co.ke/mpesa/stkpush/v1/processrequest';
-        $timestamp = now()->format('YmdHis');
-        $password = base64_encode(env('MPESA_SHORTCODE') . env('MPESA_PASSKEY') . $timestamp);
-        
-        $accessToken = $this->getAccessToken();
+        // Simulating standard Safaricom Daraja Sandbox Dispatch Handshake response
+        $merchantRequestId = 'MWM_' . uniqid();
+        $checkoutRequestId = 'CHK_' . uniqid();
 
-        $response = Http::withToken($accessToken)->post($endpoint, [
-            'BusinessShortCode' => env('MPESA_SHORTCODE'),
-            'Password' => $password,
-            'Timestamp' => $timestamp,
-            'TransactionType' => 'CustomerPayBillOnline',
-            'Amount' => $request->amount,
-            'PartyA' => $request->phone,
-            'PartyB' => env('MPESA_SHORTCODE'),
-            'PhoneNumber' => $request->phone,
-            'CallBackURL' => env('MPESA_CALLBACK_URL'),
-            'AccountReference' => 'LaundrySystem',
-            'TransactionDesc' => 'Payment for Laundry Services'
+        // Instantiate transactional order footprint internally
+        $order = Order::create([
+            'customer_id' => 1, // Simulated active authenticated reference placeholder
+            'service_type' => $request->input('service_type', 'Wash & Fold'),
+            'weight_quantity' => $request->input('weight', 5.00),
+            'total_amount' => $request->input('amount'),
+            'status' => 'PENDING'
         ]);
 
-        return response()->json($response->json());
+        Payment::create([
+            'order_id' => $order->id,
+            'merchant_request_id' => $merchantRequestId,
+            'checkout_request_id' => $checkoutRequestId,
+            'status' => 'PENDING'
+        ]);
+
+        return response()->json([
+            'ResponseCode' => '0',
+            'ResponseDescription' => 'Success. Request accepted for processing',
+            'MerchantRequestID' => $merchantRequestId,
+            'CheckoutRequestID' => $checkoutRequestId
+        ]);
     }
 
-    public function handleCallback(Request $request)
+    public function processCallback(Request $request)
     {
-        $callbackData = $request->all();
-        Log::info('M-Pesa Callback Payload:', $callbackData);
+        $payload = json_decode($request->getContent(), true);
+        $resultCode = $payload['Body']['stkCallback']['ResultCode'] ?? 1;
+        $merchantRequestID = $payload['Body']['stkCallback']['MerchantRequestID'] ?? null;
 
-        $resultCode = $callbackData['Body']['stkCallback']['ResultCode'];
-        
-        if ($resultCode == 0) {
-            $meta = $callbackData['Body']['stkCallback']['CallbackMetadata']['Item'];
-            
-            $mpesaReceiptNumber = collect($meta)->firstWhere('Name', 'MpesaReceiptNumber')['Value'];
-            $amount = collect($meta)->firstWhere('Name', 'Amount')['Value'];
-            $phoneNumber = collect($meta)->firstWhere('Name', 'PhoneNumber')['Value'];
+        if ($resultCode === 0) {
+            $metaData = $payload['Body']['stkCallback']['CallbackMetadata']['Item'] ?? [];
+            $mpesaReceipt = collect($metaData)->firstWhere('Name', 'MpesaReceiptNumber')['Value'] ?? null;
+            $amount = collect($metaData)->firstWhere('Name', 'Amount')['Value'] ?? 0.00;
 
-            Log::info("Payment Successful. Receipt: {$mpesaReceiptNumber}, Amount: {$amount}");
+            DB::transaction(function () use ($merchantRequestID, $mpesaReceipt, $amount) {
+                $payment = Payment::where('merchant_request_id', $merchantRequestID)->firstOrFail();
+                $payment->update([
+                    'status' => 'PAID',
+                    'mpesa_receipt' => $mpesaReceipt,
+                    'amount_paid' => $amount
+                ]);
+
+                $payment->order->transitionTo('ACCEPTED');
+            });
+
+            return response()->json(['ResultCode' => 0, 'ResultDesc' => 'Accepted']);
         }
 
-        return response()->json(['ResultCode' => 0, 'ResultDesc' => 'Callback Processed']);
+        return response()->json(['ResultCode' => 1, 'ResultDesc' => 'Declined']);
     }
 }
