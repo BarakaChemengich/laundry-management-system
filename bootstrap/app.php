@@ -11,7 +11,7 @@ return Application::configure(basePath: dirname(__DIR__))
         health: '/up',
     )
     ->withMiddleware(function (Middleware $middleware) {
-        
+
         // 1. Register Custom RBAC Routing Middleware Aliases
         $middleware->alias([
             'role' => \App\Http\Middleware\EnforceRole::class,
@@ -20,8 +20,23 @@ return Application::configure(basePath: dirname(__DIR__))
         // 2. Exempt External Machine Handshake Routes from CSRF
         // Safaricom Daraja API callbacks operate statelessly and cannot provide web session cookies.
         $middleware->validateCsrfTokens(except: [
+            'api/v1/mpesa/callback',
             'mpesa/callback',
-            'v1/mpesa/callback'
+        ]);
+
+        // 3. Register route middleware groups
+        $middleware->group('web', [
+            \Illuminate\Cookie\Middleware\EncryptCookies::class,
+            \Illuminate\Cookie\Middleware\AddQueuedCookiesToResponse::class,
+            \Illuminate\Session\Middleware\StartSession::class,
+            \Illuminate\View\Middleware\ShareErrorsFromSession::class,
+            \Illuminate\Foundation\Http\Middleware\ValidateCsrfToken::class,
+            \Illuminate\Routing\Middleware\SubstituteBindings::class,
+        ]);
+
+        $middleware->group('api', [
+            \Illuminate\Routing\Middleware\ThrottleRequests::class . ':api',
+            \Illuminate\Routing\Middleware\SubstituteBindings::class,
         ]);
 
     })

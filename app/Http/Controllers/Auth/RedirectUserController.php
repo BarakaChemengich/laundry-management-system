@@ -9,25 +9,32 @@ use Illuminate\Support\Facades\Auth;
 class RedirectUserController extends Controller
 {
     /**
-     * Handle the incoming request and route users based on role_id.
+     * Handle the incoming request and route users based on role.
      */
     public function __invoke(Request $request)
     {
         $user = Auth::user();
 
-        // Match roles explicitly based on the lookup table IDs
-        switch ($user->role_id) {
-            Case 1: // Admin
-                Return redirect()->route('admin.dashboard');
-            Case 2: // Customer
-                Return redirect()->route('customer.dashboard');
-            Case 3: // Vendor (Mama Fua)
-                Return redirect()->route('vendor.dashboard');
-            Case 4: // Rider
-                Return redirect()->route('rider.dashboard');
-            Default:
+        if (!$user) {
+            return redirect()->route('login');
+        }
+
+        // Match roles by role name
+        $roleName = $user->role?->name ?? '';
+
+        switch ($roleName) {
+            case 'Admin':
+                return redirect()->route('admin.dashboard');
+            case 'Customer':
+                return redirect()->route('customer.dashboard');
+            case 'Vendor':
+            case 'Mama Fua':
+                return redirect()->route('vendor.dashboard');
+            case 'Rider':
+                return redirect()->route('rider.dashboard');
+            default:
                 Auth::logout();
-                Return redirect()->route('login')->withErrors(['email' => 'Unauthorized system role assignment.']);
+                return redirect()->route('login')->withErrors(['email' => 'Unauthorized system role assignment.']);
         }
     }
 }

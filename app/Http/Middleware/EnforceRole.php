@@ -10,15 +10,10 @@ class EnforceRole
 {
     /**
      * Handle an incoming request.
-     *
-     * We intercept the request pipeline and evaluate if the authenticated user 
+     * Intercepts the request pipeline and evaluates if the authenticated user
      * possesses the precise role required to pass the route boundary.
-     *
-     * @param  \Illuminate\Http\Request  $request
-     * @param  \Closure(\Illuminate\Http\Request): (\Symfony\Component\HttpFoundation\Response)  $next
-     * @param  string  ...$roles
      */
-    public function handle(Request $request, Closure $next, string ...$roles): Response
+    public function handle(Request $request, Closure $next, ...$roles): Response
     {
         // 1. Verify user authentication status
         if (!$request->user()) {
@@ -27,9 +22,11 @@ class EnforceRole
                 : redirect()->route('login');
         }
 
-        // 2. Validate current role matches boundary parameters
-        // Ongoing system execution requires strict identity matching
-        if (!in_array($request->user()->role, $roles)) {
+        // 2. Get user's role name from relationship
+        $userRole = $request->user()->role?->name ?? '';
+
+        // 3. Validate current role matches boundary parameters
+        if (!in_array($userRole, $roles)) {
             return $request->expectsJson()
                 ? response()->json([
                     'status'  => 'UNAUTHORIZED_ACCESS',
