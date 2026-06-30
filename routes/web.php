@@ -8,6 +8,7 @@ use App\Http\Controllers\Rider\RiderDashboardController;
 use App\Http\Controllers\Vendor\VendorDashboardController;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Route;
+use App\Http\Controllers\OrderController;
 
 // ==========================================
 // AUTHENTICATION ROUTES
@@ -23,12 +24,40 @@ Route::get('/dashboard', RedirectUserController::class)->name('dashboard');
 // CUSTOMER ROUTES
 // ==========================================
 Route::middleware(['auth', 'role:Customer'])->prefix('customer')->name('customer.')->group(function () {
+
     Route::get('/dashboard', [CustomerDashboardController::class, 'index'])->name('dashboard');
-    Route::post('/orders', [CustomerDashboardController::class, 'storeOrder'])->name('orders.store');
-    Route::get('/orders/{order}/track', [CustomerDashboardController::class, 'trackOrder'])->name('orders.track');
-    Route::post('/orders/{order}/rate', [CustomerDashboardController::class, 'rateVendor'])->name('orders.rate');
-    Route::post('/orders/{order}/message', [CustomerDashboardController::class, 'sendMessage'])->name('orders.message');
-    Route::get('/orders/{order}/reorder', [CustomerDashboardController::class, 'reorder'])->name('orders.reorder');
+
+    Route::get('/new-order/{id}', [CustomerDashboardController::class, 'newOrder'])
+        ->name('new-order');
+
+    Route::post('/select-store', [OrderController::class, 'selectStore'])
+        ->name('select-store');
+
+    Route::post('/place-order', [OrderController::class, 'placeOrder'])
+        ->name('place-order');
+
+    Route::post('/cancel-order', [OrderController::class, 'cancel'])
+        ->name('cancel-order');
+
+    Route::post('/orders', [CustomerDashboardController::class, 'storeOrder'])
+        ->name('orders.store');
+
+    Route::get('/orders/{order}/track', [CustomerDashboardController::class, 'trackOrder'])
+        ->name('orders.track');
+
+    Route::post('/orders/{order}/rate', [CustomerDashboardController::class, 'rateVendor'])
+        ->name('orders.rate');
+
+    Route::post('/orders/{order}/message', [CustomerDashboardController::class, 'sendMessage'])
+        ->name('orders.message');
+
+    Route::get('/orders/{order}/reorder', [CustomerDashboardController::class, 'reorder'])
+        ->name('orders.reorder');
+    Route::get('/service-selection/{id}',
+    [OrderController::class,'serviceSelection'])
+    ->name('service-selection');
+    Route::post('/service-selection/{order}', [OrderController::class, 'saveService'])
+    ->name('save-service');
 });
 
 // ==========================================

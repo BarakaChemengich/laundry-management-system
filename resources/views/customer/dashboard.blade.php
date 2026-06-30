@@ -11,43 +11,50 @@
     </div>
 
     <!-- Services Section -->
-    <div class="services-container">
-        <div class="service-card" onclick="selectService('Wash & Fold', 120)">
-            <div class="service-icon">🧺</div>
-            <p>Wash & Fold</p>
+<div class="services-container">
+
+    @foreach($packages as $package)
+
+        <div class="service-card"
+             onclick="selectService('{{ $package->name }}', {{ $package->price_per_unit }}, {{ $package->id }})">
+
+<div class="service-icon">
+    @switch($package->name)
+        @case('Wash & Fold')
+            🧺
+            @break
+
+        @case('Dry Cleaning')
+            👔
+            @break
+
+        @case('Ironing')
+            🧼
+            @break
+
+        @case('Bedding')
+            🛏️
+            @break
+
+        @case('Curtains')
+            🪟
+            @break
+
+        @case('Shoes')
+            👟
+            @break
+
+        @default
+            🧺
+    @endswitch
+</div>
+            <p>{{ $package->name }}</p>
+
         </div>
 
-        <div class="service-card" onclick="selectService('Dry Cleaning', 250)">
-            <div class="service-icon">👕</div>
-            <p>Dry Cleaning</p>
-        </div>
+    @endforeach
 
-        <div class="service-card" onclick="selectService('Ironing', 80)">
-            <div class="service-icon">🧼</div>
-            <p>Ironing</p>
-        </div>
-
-        <div class="service-card" onclick="selectService('Bedding', 150)">
-            <div class="service-icon">🛏️</div>
-            <p>Bedding</p>
-        </div>
-
-        <div class="service-card" onclick="selectService('Curtains', 200)">
-            <div class="service-icon">🪟</div>
-            <p>Curtains</p>
-        </div>
-
-        <div class="service-card" onclick="selectService('Shoes', 300)">
-            <div class="service-icon">👟</div>
-            <p>Shoes</p>
-        </div>
-
-        <div class="service-card" onclick="switchView('new-order')">
-            <div class="service-icon">➕</div>
-            <p>More</p>
-        </div>
-    </div>
-
+</div>
     <!-- Promotional Cards -->
     <div class="promo-container">
         <!-- First Order -->

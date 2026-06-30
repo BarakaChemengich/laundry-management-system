@@ -843,6 +843,632 @@
             .laundromat-container { grid-template-columns: 1fr; }
             .profile strong, .profile small { display: none; }
         }
+        <style>
+
+<style>
+
+.booking-container{
+
+    max-width:1100px;
+    margin:auto;
+    padding:30px;
+
+}
+
+.booking-header{
+    display:flex;
+    justify-content:space-between;
+    align-items:center;
+
+    padding:28px 40px;   /* reduced */
+    min-height:140px;    /* reduced */
+
+    background:#3563E9;
+    border-radius:22px 22px 0 0;
+}
+
+.booking-header h2{
+
+    margin:10px 0;
+
+}
+
+.steps{
+
+    display:flex;
+
+    gap:15px;
+
+}
+
+.steps span{
+
+    width:40px;
+
+    height:40px;
+
+    border-radius:50%;
+
+    background:#3B82F6;
+
+    display:flex;
+
+    align-items:center;
+
+    justify-content:center;
+
+    font-weight:bold;
+
+}
+
+.steps .active{
+
+    background:#FACC15;
+
+    color:black;
+
+}
+
+.booking-body{
+    display:flex;
+    gap:25px;
+    padding:25px;
+}
+
+.top-row{
+
+    display:flex;
+
+    justify-content:space-between;
+
+    align-items:center;
+
+    margin-bottom:20px;
+
+}
+
+.top-row input{
+
+    width:280px;
+
+    padding:12px;
+
+    border:1px solid #ddd;
+
+    border-radius:8px;
+
+}
+.stores{
+    flex:2;
+    padding:20px;
+}
+.store-card{
+    background:#fff;
+    border:1px solid #e5e7eb;
+    border-radius:18px;
+    padding:20px;
+    margin:18px 0;
+}
+
+.store-card:hover{
+
+    border-color:#2563EB;
+
+}
+
+.store-top{
+
+    display:flex;
+
+    justify-content:space-between;
+
+}
+
+.badge{
+
+    background:#DBEAFE;
+
+    color:#2563EB;
+
+    padding:5px 12px;
+
+    border-radius:20px;
+
+    font-size:12px;
+
+}
+
+.verified{
+
+    color:green;
+
+    font-size:14px;
+
+}
+
+.store-info{
+
+    display:flex;
+
+    gap:25px;
+
+    margin:20px 0;
+
+}
+
+.store-card button{
+
+    width:100%;
+
+    padding:12px;
+
+    border:none;
+
+    border-radius:8px;
+
+    background:#2563EB;
+
+    color:white;
+
+    cursor:pointer;
+
+}
+
+.summary{
+
+    background:white;
+
+    border-radius:15px;
+
+    padding:25px;
+
+    box-shadow:0 5px 20px rgba(0,0,0,.08);
+
+    height:fit-content;
+
+}
+
+.summary-item{
+
+    display:flex;
+
+    justify-content:space-between;
+
+    margin:18px 0;
+
+}
+
+.total{
+
+    font-size:20px;
+
+}
+
+.continue-btn{
+
+    width:100%;
+
+    margin-top:20px;
+
+    padding:15px;
+
+    border:none;
+
+    border-radius:10px;
+
+    background:#2563EB;
+
+    color:white;
+
+    font-size:16px;
+
+}
+.booking-wrapper{
+    display:flex;
+    justify-content:center;
+    padding:40px 20px;
+}
+.booking-container{
+
+    width:90%;
+    max-width:1100px;
+
+    background:#fff;
+
+    border-radius:18px;
+
+    overflow:hidden;
+
+    box-shadow:0 10px 30px rgba(0,0,0,.08);
+
+}
+.booking-header{
+
+    background:#2F5BEA;
+
+    color:#fff;
+
+    padding:30px 40px;
+
+    display:flex;
+
+    justify-content:space-between;
+
+    align-items:center;
+
+}
+.header-left{
+
+    display:flex;
+
+    align-items:center;
+
+    gap:18px;
+
+}
+.header-icon{
+
+    width:65px;
+
+    height:65px;
+
+    border-radius:50%;
+
+    background:rgba(255,255,255,.15);
+
+    display:flex;
+
+    justify-content:center;
+
+    align-items:center;
+
+    font-size:32px;
+
+}
+.steps{
+
+    display:flex;
+
+    gap:18px;
+
+}
+.steps span{
+
+    width:38px;
+
+    height:38px;
+
+    border-radius:50%;
+
+    background:rgba(255,255,255,.25);
+
+    display:flex;
+
+    justify-content:center;
+
+    align-items:center;
+
+    font-weight:bold;
+
+}
+.steps .active{
+
+    background:#FFC107;
+
+    color:#000;
+
+}
+.store-search{
+    width:320px;
+    padding:12px 18px;
+    border:1px solid #d6dce5;
+    border-radius:12px;
+    font-size:15px;
+    background:#fff;
+    outline:none;
+    transition:.3s;
+}
+
+.store-search:focus{
+    border-color:#2563eb;
+    box-shadow:0 0 0 3px rgba(37,99,235,.15);
+}
+.cancel-btn{
+display:block;
+text-align:center;
+background:#f3f4f6;
+padding:15px;
+border-radius:12px;
+text-decoration:none;
+font-weight:600;
+color:#111827;
+margin-top:15px;
+transition:.3s;
+}
+
+.cancel-btn:hover{
+background:#e5e7eb;
+}
+.booking-wrapper{
+    padding:40px;
+    background:#f5f7fb;
+}
+
+.booking-container{
+    background:#fff;
+    border-radius:25px;
+    overflow:hidden;
+    box-shadow:0 15px 40px rgba(0,0,0,.08);
+    
+}
+
+.booking-header{
+    background:#2f5bea;
+    color:white;
+    padding:35px 45px;
+
+    display:flex;
+    justify-content:space-between;
+    align-items:center;
+}
+
+.header-left{
+    display:flex;
+    align-items:center;
+    gap:18px;
+}
+
+.header-icon{
+    width:60px;
+    height:60px;
+    border-radius:18px;
+    background:rgba(255,255,255,.15);
+
+    display:flex;
+    justify-content:center;
+    align-items:center;
+
+    font-size:30px;
+}
+
+.header-left small{
+    color:#FFD54A;
+    font-weight:700;
+    letter-spacing:2px;
+    font-size:13px;
+}
+
+.header-left h2{
+    margin:5px 0;
+    font-size:34px;
+    font-weight:600;
+}
+
+.header-left p{
+    opacity:.9;
+     font-size:18px;
+    margin-top:3px;
+}
+
+.steps{
+    display:flex;
+    align-items:center;
+    gap:18px;
+}
+
+.steps span{
+    width:42px;
+    height:42px;
+    border-radius:50%;
+    background:rgba(255,255,255,.25);
+
+    display:flex;
+    justify-content:center;
+    align-items:center;
+
+    font-weight:bold;
+    font-size:18px;
+}
+
+.steps .completed{
+    background:#16c784;
+    color:white;
+}
+
+.steps .active{
+    background:#FFC72C;
+    color:#111;
+}
+.booking-content{
+    display:grid;
+    grid-template-columns:2fr 1fr;
+    gap:25px;
+    padding:25px;
+}
+
+.section-header{
+    display:flex;
+    justify-content:space-between;
+    align-items:center;
+    margin-bottom:25px;
+}
+
+.section-header h3{
+    font-size:24px;
+    font-weight:700;
+}
+
+.section-header span{
+    color:#2f5bea;
+    font-weight:600;
+}
+
+.services-grid{
+    display:grid;
+    grid-template-columns:repeat(3,1fr);
+    gap:18px;
+}
+
+.service-card{
+    border:1px solid #e5e7eb;
+    border-radius:16px;
+    padding:20px;
+    cursor:pointer;
+    transition:.3s;
+    background:white;
+    min-height:140px;
+}
+
+.service-card:hover{
+    transform:translateY(-3px);
+}
+
+.service-card.active{
+    border:2px solid #2f5bea;
+    background:#f5f8ff;
+}
+
+.service-icon{
+    font-size:30px;
+    margin-bottom:15px;
+}
+
+.service-card h4{
+    margin-bottom:8px;
+}
+
+.service-card small{
+    color:#6b7280;
+}
+
+.summary-section{
+    border:1px solid #e5e7eb;
+    border-radius:20px;
+    padding:25px;
+}
+.summary-row{
+    display:flex;
+    justify-content:space-between;
+    margin:18px 0;
+}
+
+.summary-row span{
+    color:#666;
+}
+
+.total{
+    font-size:20px;
+    font-weight:bold;
+}
+
+.continue-btn{
+
+    width:100%;
+    margin-top:30px;
+
+    padding:15px;
+
+    background:#2f5bea;
+
+    color:white;
+
+    border:none;
+
+    border-radius:12px;
+
+    font-size:16px;
+
+    cursor:pointer;
+}
+
+.cancel-btn{
+
+    width:100%;
+
+    margin-top:12px;
+
+    padding:15px;
+
+    background:#eceff5;
+
+    border:none;
+
+    border-radius:12px;
+
+    cursor:pointer;
+}
+.details-card{
+
+    margin-top:30px;
+
+    border:1px solid #e5e7eb;
+
+    border-radius:18px;
+
+    padding:25px;
+
+}
+
+.details-card h4{
+
+    margin-bottom:20px;
+
+}
+
+.weight-header{
+
+    display:flex;
+
+    justify-content:space-between;
+
+    margin-bottom:15px;
+
+}
+
+#weightSlider{
+
+    width:100%;
+
+}
+
+.weight-labels{
+
+    display:flex;
+
+    justify-content:space-between;
+
+    color:#999;
+
+    margin-top:8px;
+
+}
+
+.instructions{
+
+    margin-top:25px;
+
+}
+
+.instructions textarea{
+
+    width:100%;
+
+    height:110px;
+
+    resize:none;
+
+    border:1px solid #ddd;
+
+    border-radius:12px;
+
+    padding:15px;
+
+    font-size:15px;
+
+}
+</style>
+
+</style>
     </style>
 </head>
 <body>
@@ -962,10 +1588,10 @@
 </div>
 
 <script>
-    function selectService(name, price) {
-        alert('Selected: ' + name + ' - KSh ' + price + '/kg');
-        window.location.href = '/customer/dashboard?view=new-order';
-    }
+   function selectService(name, price, id) {
+    window.location.href = `/customer/new-order/${id}`;
+}
+    
 
     function switchView(view) {
         window.location.href = '/customer/dashboard?view=' + view;

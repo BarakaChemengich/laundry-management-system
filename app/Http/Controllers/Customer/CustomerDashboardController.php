@@ -38,7 +38,13 @@ class CustomerDashboardController extends Controller
 
         return view('customer.dashboard', compact('packages', 'orders', 'recentOrders', 'stats'));
     }
+      
+    public function newOrder($id)
+{
+    $package = LaundryPackage::findOrFail($id);
 
+    return view('customer.new-order', compact('package'));
+}
     public function storeOrder(Request $request)
     {
         $request->validate([
@@ -53,16 +59,16 @@ class CustomerDashboardController extends Controller
 
         DB::transaction(function () use ($request, $package, $totalPrice) {
             $order = Order::create([
-                'customer_id' => auth()->id(),
-                'laundry_package_id' => $package->id,
-                'service_type' => $package->name,
-                'weight_quantity' => $request->weight_quantity,
-                'total_price' => $totalPrice,
-                'collection_address' => $request->collection_address,
-                'scheduled_pickup_at' => $request->scheduled_pickup_at,
-                'status' => 'PENDING',
-                'estimated_turnaround' => $package->estimated_hours . ' hours',
-            ]);
+    'customer_id' => auth()->id(),
+    'laundry_package_id' => $package->id,
+    'service_type' => $package->name,
+    'weight_quantity' => $request->weight_quantity,
+    'total_price' => $totalPrice,
+    'collection_address' => $request->collection_address,
+    'scheduled_pickup_at' => $request->scheduled_pickup_at,
+    'status' => 'PENDING',
+    'estimated_turnaround' => $package->estimated_hours . ' hours',
+]);
 
             \App\Models\Payment::create([
                 'order_id' => $order->id,
