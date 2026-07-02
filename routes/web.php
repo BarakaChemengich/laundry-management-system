@@ -58,6 +58,14 @@ Route::middleware(['auth', 'role:Customer'])->prefix('customer')->name('customer
     ->name('service-selection');
     Route::post('/service-selection/{order}', [OrderController::class, 'saveService'])
     ->name('save-service');
+    Route::get('/pickup-details/{id}',
+    [OrderController::class, 'pickupDetails'])
+    ->name('pickup-details');
+
+Route::post('/pickup-details/{id}',
+    [OrderController::class, 'savePickupDetails'])
+    ->name('save-pickup-details');
+    
 });
 
 // ==========================================

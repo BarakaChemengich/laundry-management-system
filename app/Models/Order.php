@@ -17,7 +17,11 @@ class Order extends Model
         'weight_quantity',
         'total_price',
         'collection_address',
+        'return_address',
         'scheduled_pickup_at',
+        'return_date',
+        'delivery_option',
+        'phone_number',
         'status',
         'estimated_turnaround',
         'completed_at'
@@ -25,6 +29,7 @@ class Order extends Model
 
     protected $casts = [
         'scheduled_pickup_at' => 'datetime',
+        'return_date' => 'date',
         'completed_at' => 'datetime',
         'weight_quantity' => 'float',
         'total_price' => 'float',

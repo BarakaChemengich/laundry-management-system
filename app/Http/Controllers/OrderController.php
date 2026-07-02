@@ -24,7 +24,8 @@ class OrderController extends Controller
     }
 
     /**
-     * Place the order (Step 1).
+     * STEP 1
+     * Create a new order after selecting a laundry.
      */
     public function placeOrder(Request $request)
     {
@@ -38,10 +39,12 @@ class OrderController extends Controller
             'vendor_id' => $request->vendor_id,
             'laundry_package_id' => $request->laundry_package_id,
 
-            // Temporary values (will be updated in Step 2)
+            // These will be updated later
             'service_type' => '',
             'weight_quantity' => 0,
             'collection_address' => '',
+            'scheduled_pickup_at' => null,
+            'estimated_turnaround' => '',
             'total_price' => 0,
 
             'status' => Order::STATUS_PENDING,
@@ -54,7 +57,7 @@ class OrderController extends Controller
     }
 
     /**
-     * Cancel order.
+     * Cancel Order
      */
     public function cancel()
     {
@@ -69,7 +72,7 @@ class OrderController extends Controller
     }
 
     /**
-     * Step 2 page.
+     * STEP 2 PAGE
      */
     public function serviceSelection($id)
     {
@@ -77,29 +80,84 @@ class OrderController extends Controller
 
         return view('customer.service-selection', compact('order'));
     }
+
+    /**
+     * Save Step 2
+     */
     public function saveService(Request $request, Order $order)
-{
-    $request->validate([
-        'service_type' => 'required',
-        'weight_quantity' => 'required|numeric|min:1',
-        'special_instructions' => 'nullable|string'
-    ]);
+    {
+        $request->validate([
+            'service_type' => 'required',
+            'weight_quantity' => 'required|numeric|min:1',
+            'total_price' => 'required|numeric',
+            'special_instructions' => 'nullable|string'
+        ]);
 
-    $order->update([
+        $order->update([
 
-        'service_type' => $request->service_type,
+            'service_type' => $request->service_type,
 
-        'weight_quantity' => $request->weight_quantity,
+            'weight_quantity' => $request->weight_quantity,
 
-        'total_price' => $request->total_price,
+            'total_price' => $request->total_price,
 
-        'estimated_turnaround' => $request->special_instructions
+            // Temporary storage
+            'estimated_turnaround' => $request->special_instructions
 
-    ]);
+        ]);
 
-    return redirect()->route(
-        'customer.pickup-details',
-        $order->id
-    );
-}
+        return redirect()->route(
+            'customer.pickup-details',
+            $order->id
+        );
+    }
+
+    /**
+     * STEP 3 PAGE
+     */
+    public function pickupDetails($id)
+    {
+        $order = Order::with('vendor')->findOrFail($id);
+
+        if ($order->customer_id !== auth()->id()) {
+            abort(403);
+        }
+
+        return view('customer.pickup-details', compact('order'));
+    }
+
+    /**
+     * Save Step 3
+     */
+    public function savePickupDetails(Request $request, $id)
+    {
+        $order = Order::findOrFail($id);
+
+        if ($order->customer_id !== auth()->id()) {
+            abort(403);
+        }
+
+        $request->validate([
+            'pickup_date' => 'required|date',
+            'pickup_time' => 'required',
+            'return_date' => 'nullable|date|after_or_equal:pickup_date',
+            'collection_address' => 'required|string',
+            'return_address' => 'required|string',
+            'phone_number' => 'required|string|max:20',
+            'delivery_option' => 'nullable|string|max:100',
+        ]);
+
+        $order->update([
+            'scheduled_pickup_at' => $request->pickup_date . ' ' . $request->pickup_time,
+            'return_date' => $request->return_date,
+            'collection_address' => $request->collection_address,
+            'return_address' => $request->return_address,
+            'delivery_option' => $request->delivery_option,
+            'phone_number' => $request->phone_number,
+        ]);
+
+        return redirect()
+            ->route('customer.pickup-details', $order->id)
+            ->with('success', 'Schedule and logistics saved successfully.');
+    }
 }

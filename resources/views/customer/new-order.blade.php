@@ -101,6 +101,7 @@
                 </div>
 
 <button
+type="button"
 class="select-store"
 data-id="1"
 data-name="CleanWave Laundry"
@@ -140,6 +141,7 @@ Select Store
                 </div>
 
                 <button
+type="button"
 class="select-store"
 data-id="2"
 data-name="FreshFold Laundry"
@@ -157,6 +159,11 @@ Select Store
 <div class="summary">
 
     <h3>ORDER SUMMARY</h3>
+    @if ($errors->any())
+        <div style="margin: 0 0 14px; padding: 12px; border-radius: 10px; background: #fef2f2; border: 1px solid #fecaca; color: #b91c1c; font-size: 12px;">
+            {{ $errors->first() }}
+        </div>
+    @endif
      <div class="summary-item">
     <span>Selected Store</span>
     <strong id="selectedStore">
@@ -179,7 +186,7 @@ KSh 0/Per Kg
 
     <hr>
 
-    <form action="{{ route('customer.place-order') }}" method="POST">
+    <form id="placeOrderForm" action="{{ route('customer.place-order') }}" method="POST">
 
 @csrf
 
@@ -195,7 +202,9 @@ value="{{ $package->id }}">
         
         <button
 type="submit"
-class="continue-btn">
+class="continue-btn"
+id="placeOrderButton"
+disabled>
 
 Place Order
 
@@ -291,7 +300,21 @@ document.getElementById("unitPrice").innerHTML=
 
 document.getElementById("vendor_id").value=this.dataset.id;
 
+document.getElementById("placeOrderButton").disabled = false;
+
 });
+
+});
+
+document.getElementById("placeOrderForm").addEventListener("submit",function(event){
+
+if(!document.getElementById("vendor_id").value){
+
+event.preventDefault();
+
+alert("Please select a laundry store before placing the order.");
+
+}
 
 });
 
